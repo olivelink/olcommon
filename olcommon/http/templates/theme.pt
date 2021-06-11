@@ -1,0 +1,54 @@
+<!doctype html>
+<html metal:define-macro="theme">
+    <head>
+        <meta charset="utf-8">
+        <metal:slot metal:define-slot="document-meta">
+            <title>
+                <metal:slot metal:define-slot="document-title">${request.path}</metal:slot> &mdash; <metal:slot metal:define-slot="site-title">${request.host}</metal:slot>
+            </title>
+        </metal:slot>
+<style>
+
+body {
+    padding: 40px 15px 0 15px;
+    background: #101014;
+    color: #eee;
+    font-family: serif;
+    font-size: 18px;
+    text-align: center;
+}
+
+#go-home {
+    position: fixed;
+    right: 10px;
+    top: 5px;
+    height: 64px;
+    width: 64px;
+}
+
+#go-home a {
+    display: block;
+    width: 64px;
+    line-height: 64px;
+    background: #444;
+    font-size: 40px;
+    text-decoration: none;
+    border: 3px solid #444;
+    border-radius: 3px;
+}
+#go-home a:hover {
+    border-color: #555;
+
+}
+</style>
+
+    </head>
+    <body>
+        <metal:slot define-slot="page-body">
+        ${response.status}
+        </metal:slot>
+        <div id="go-home">
+            <a href="/">🏠</a>
+        </div>
+    </body>
+</html>

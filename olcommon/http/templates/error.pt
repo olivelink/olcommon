@@ -1,0 +1,11 @@
+<metal:macro define-macro="error" extend-macro="templates['theme_error']">
+    <metal:slot fill-slot="error_title">
+        <metal:slot define-slot="error_title">
+            <tal:block tal:replace="python: [*request.response.status.split(' ', 1), *['Error']][1] + '.'"></tal:block>
+        </metal:slot>
+    </metal:slot>
+    <metal:slot fill-slot="error_friendly_message">
+        <metal:slot define-slot="friendly_message">
+        </metal:slot>
+    </metal:slot>
+</metal:macro>
