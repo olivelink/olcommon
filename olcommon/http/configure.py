@@ -3,7 +3,7 @@ from datetime import date
 from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
-
+from os.path import dirname
 
 import os.path
 import pyramid.renderers
@@ -33,6 +33,10 @@ def includeme(config):
         debug=registry["is_debug"],
     )
 
+    # Add root factory
+    config.set_root_factory(root_factory)
+
+
     # Add adaptors to JSON renderer
     json_renderer = pyramid.renderers.JSON()
     json_renderer.add_adapter(datetime, json_datetime_adapter)
@@ -47,6 +51,11 @@ def includeme(config):
     # Includes
     config.include(".docs")
 
+
+# Root factory
+
+def root_factory(request):
+    return request.registry["root_class"].from_request(request)
 
 # JSON Renderer
 
