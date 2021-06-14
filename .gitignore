@@ -1,0 +1,9 @@
+# General files to ignore
+*.egg-info
+*.pyc
+*.pyo
+/.undodir/
+/Session.vim
+.DS_Store
+Thumbs.db
+*.code-workspace
