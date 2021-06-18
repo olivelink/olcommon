@@ -5,7 +5,7 @@ from pyramid.view import view_config
 from pyramid.view import view_defaults
 
 
-@view_defaults(route_name="check", physical_path=("",))
+@view_defaults(route_name="check")
 class CheckView(object):
     def __init__(self, context, request):
         self.context = context
@@ -43,3 +43,9 @@ class CheckView(object):
                 content_type="text/plain",
             )
         return Response(body="200 ok redis", content_type="text/plain")
+
+
+def includeme(config):
+    """Configures access to documentation"""
+    config.add_route("check", "_check/*traverse")
+    config.scan(".check")

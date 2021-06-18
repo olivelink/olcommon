@@ -5,6 +5,7 @@ from decimal import Decimal
 from uuid import UUID
 from os.path import dirname
 
+import os
 import os.path
 import pyramid.renderers
 import zope.sqlalchemy
@@ -49,7 +50,8 @@ def configure_registry(config):
             [p for p in settings["template_dirs"].split() if p.strip()] +
             [TEMPLATE_DIR]
         ),
-        debug=registry["is_debug"],
+        registry=registry,
+        auto_reload=registry["is_debug"],
     )
 
 
@@ -79,6 +81,8 @@ def configure_request(config):
 
 
 def configure_routes(config):
+    config.include(".route.robots")
+    config.include(".route.check")
     config.include(".route.docs")
 
 # Request configuration
