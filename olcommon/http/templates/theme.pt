@@ -7,48 +7,90 @@
                 <metal:slot metal:define-slot="document-title">${request.path}</metal:slot> &mdash; <metal:slot metal:define-slot="site-title">${request.host}</metal:slot>
             </title>
         </metal:slot>
-<style>
+        <style>
+            body {
+                padding: 40px 15px 0 15px;
+                background: #101014;
+                color: #eee;
+                font-family: serif;
+                font-size: 18px;
+                text-align: center;
+            }
 
-body {
-    padding: 40px 15px 0 15px;
-    background: #101014;
-    color: #eee;
-    font-family: serif;
-    font-size: 18px;
-    text-align: center;
-}
+            #go-home {
+                position: fixed;
+                right: 10px;
+                top: 5px;
+                height: 64px;
+                width: 64px;
+            }
 
-#go-home {
-    position: fixed;
-    right: 10px;
-    top: 5px;
-    height: 64px;
-    width: 64px;
-}
+            #go-home a {
+                display: block;
+                width: 64px;
+                line-height: 64px;
+                background: #444;
+                font-size: 40px;
+                text-decoration: none;
+                border: 3px solid #444;
+                border-radius: 3px;
+            }
+            #go-home a:hover {
+                border-color: #555;
 
-#go-home a {
-    display: block;
-    width: 64px;
-    line-height: 64px;
-    background: #444;
-    font-size: 40px;
-    text-decoration: none;
-    border: 3px solid #444;
-    border-radius: 3px;
-}
-#go-home a:hover {
-    border-color: #555;
-
-}
-</style>
+            }
+        </style>
 
     </head>
     <body>
-        <metal:slot define-slot="page-body">
-        ${response.status}
-        </metal:slot>
+        <h1>${request.path}</metal:slot> &mdash; ${request.host}</h1>
         <div id="go-home">
             <a href="/">🏠</a>
         </div>
+        <hr />
+        <main id="main" role="main">
+            <metal:slot metal:define-slot="main">
+                <article id="content">
+                    <div id="content-inner">
+                        <metal:slot metal:define-slot="page-body">
+                        </metal:slot>
+                    </div>
+                </article>
+            </metal:slot>
+        </main>
+        <hr />
+        <p>Response status: ${response.status}</p>
     </body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+
+    <metal:slot metal:define-slot="document-meta">
+        <title>
+            <metal:slot metal:define-slot="document-title">Welcome.</metal:slot> - Taskmatix.
+        </title>
+    </metal:slot>
+    
+  </head>
+  <body>
+      <main id="main" role="main">
+        <metal:slot metal:define-slot="main">
+            <article id="content">
+                <div id="content-inner">
+                    <metal:slot metal:define-slot="page-body">
+                    </metal:slot>
+                </div>
+            </article>
+        </metal:slot>
+    </main>
+  </body>
 </html>

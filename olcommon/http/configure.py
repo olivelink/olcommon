@@ -45,14 +45,20 @@ def configure_registry(config):
     registry["session_timeout"] = int(settings["session_timeout"])
     registry["session_secret"] = settings["session_secret"]
     registry["docs_dist"] = settings["docs_dist"]
+    
+    templates_extra_builtins = {
+        "registry": registry,
+    }
     registry["templates"] = PageTemplateLoader(
         (
             [p for p in settings["template_dirs"].split() if p.strip()] +
             [TEMPLATE_DIR]
         ),
+        extra_builtins=templates_extra_builtins,
         registry=registry,
         auto_reload=registry["is_debug"],
     )
+    templates_extra_builtins["templates"] = registry["templates"]
 
 
 def configure_rendering(config):
@@ -83,6 +89,7 @@ def configure_request(config):
 def configure_routes(config):
     config.include(".route.robots")
     config.include(".route.check")
+    config.include(".route.test")
     config.include(".route.docs")
 
 # Request configuration

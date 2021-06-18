@@ -1,5 +1,3 @@
-# -*- coding:utf-8 -*-
-
 from pyramid.view import exception_view_config
 from pyramid.view import forbidden_view_config
 from pyramid.view import notfound_view_config
@@ -17,5 +15,9 @@ def error(context, request):
         response.status_code = context.code
     else:
         response.status_code = 500
-    
-    return {}
+
+    response.text = request.registry["templates"]["error.pt"](
+        response=response,
+        request=request,
+    )
+    return response

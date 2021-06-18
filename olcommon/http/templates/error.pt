@@ -1,4 +1,4 @@
-<metal:macro define-macro="error" extend-macro="templates['theme_error']">
+<metal:macro define-macro="error" extend-macro="templates['theme_error.pt']">
     <metal:slot fill-slot="error_title">
         <metal:slot define-slot="error_title">
             <tal:block tal:replace="python: [*request.response.status.split(' ', 1), *['Error']][1] + '.'"></tal:block>

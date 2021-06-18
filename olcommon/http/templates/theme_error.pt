@@ -1,23 +1,23 @@
-<metal:macro define-macro="theme_error" extend-macro="templates['theme']">
+<metal:macro define-macro="theme_error" extend-macro="templates['theme.pt']">
     <metal:slot fill-slot="page-body">
     <style>
-#error {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+        #error {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#error-content{
-}
-#error-content h1 {
-    padding: 0;
-    margin: 0;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #error-content{
+        }
+        #error-content h1 {
+            padding: 0;
+            margin: 0;
+        }
     </style>
     <div id="error">
         <div id="error-content">
