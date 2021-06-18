@@ -49,7 +49,6 @@ class SiteBase(object):
             'redis': request.redis,
             'mailer': request.mailer,
             'transaction': request.tm,
-            'request': request,
             **kwargs,
         }
         return cls(**kwargs)

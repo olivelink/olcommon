@@ -44,14 +44,16 @@ def includeme(config):
 
     monkey_patch_pyramid_debugtoolbar_toolbar_toolbar_html_template()
 
-    docs_static_location = settings.get("docs_static_location", None)
-    if docs_static_location:
-        if registry["is_debug"]:
-            config.add_static_view("++docs++", docs_static_location, cache_max_age=5)
-        else:
-            config.add_static_view(
-                "++docs++",
-                docs_static_location,
-                permission="view-docs",
-                cache_max_age=300,
-            )
+    if registry["is_debug"]:
+        config.add_static_view(
+            "++docs++",
+            registry["docs_dist"],
+            cache_max_age=5
+        )
+    else:
+        config.add_static_view(
+            "++docs++",
+            registry["docs_dist"],
+            permission="view-docs",
+            cache_max_age=300,
+        )

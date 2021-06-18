@@ -7,6 +7,8 @@ from os.path import dirname
 
 import os.path
 import pyramid.renderers
+import zope.sqlalchemy
+
 
 TEMPLATE_DIR = os.path.join(dirname(__file__), "templates")
 
@@ -14,28 +16,45 @@ TEMPLATE_DIR = os.path.join(dirname(__file__), "templates")
 def includeme(config):
     """Configure a pyramid application
     """
+    configure_registry(config)
+    configure_plugins(config)
+    configure_rendering(config)
+    configure_request(config)
+    configure_routes(config)
+
+
+def configure_plugins(config):
+    registry = config.registry
+    config.include("pyramid_exclog")
+    config.add_settings({"tm.manager_hook": "pyramid_tm.explicit_manager"})
+    config.include("pyramid_tm")
+    if registry["is_debug"]:
+        config.include("pyramid_debugtoolbar")
+        config.include('pyramid_mailer.debug')
+    else:
+        config.include("pyramid_mailer")
+
+
+def configure_registry(config):
+    # Configure registry
     settings = config.get_settings()
     registry = config.registry
-
-    # Configure registry
     registry["cookie_prefix"] = settings["cookie_prefix"]
     registry["cookie_domain"] = settings["cookie_domain"]
     registry["session_timeout"] = int(settings["session_timeout"])
     registry["session_secret"] = settings["session_secret"]
-
-    # Add a template loader
-    template_dirs = ( 
-        [p for p in settings["template_dirs"].split() if p.strip()] +
-        [TEMPLATE_DIR]
-    )
+    registry["docs_dist"] = settings["docs_dist"]
     registry["templates"] = PageTemplateLoader(
-        template_dirs,
+        (
+            [p for p in settings["template_dirs"].split() if p.strip()] +
+            [TEMPLATE_DIR]
+        ),
         debug=registry["is_debug"],
     )
 
-    # Add root factory
-    config.set_root_factory(root_factory)
 
+def configure_rendering(config):
+    registry = config.registry
 
     # Add adaptors to JSON renderer
     json_renderer = pyramid.renderers.JSON()
@@ -48,14 +67,36 @@ def includeme(config):
     # Add the jsend renderer
     config.add_renderer("jsend", JSendRenderer)
 
-    # Includes
-    config.include(".docs")
 
 
-# Root factory
+def configure_request(config):
+    registry = config.registry
+
+    config.set_root_factory(root_factory)
+    config.add_request_method(db_session_from_request, "db_session", reify=True)
+    config.add_request_method(redis_from_request, "redis", reify=True)
+
+
+
+def configure_routes(config):
+    config.include(".route.docs")
+
+# Request configuration
 
 def root_factory(request):
     return request.registry["root_class"].from_request(request)
+
+
+def db_session_from_request(request):
+    """Create a dbsession for a given request"""
+    db_session_factory = request.registry["db_session_factory"]
+    db_session = db_session_factory()
+    zope.sqlalchemy.register(db_session, transaction_manager=request.tm)
+    return db_session
+
+
+def redis_from_request(request):
+    return request.registry["redis"]
 
 # JSON Renderer
 
