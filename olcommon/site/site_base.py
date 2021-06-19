@@ -52,3 +52,6 @@ class SiteBase(object):
             **kwargs,
         }
         return cls(**kwargs)
+
+    def principals_for_identity(self, identity):
+        return []
