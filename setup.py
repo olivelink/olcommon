@@ -20,7 +20,7 @@ setup(name='olcommon',
         'pyramid_exclog',
         'pyramid_tm',
         'pyramid_mailer',
-        'pyramid_redis_sessions',
+        'pyramid_session_redis',
 
         'sqlalchemy',
         'sqlalchemy-utils',

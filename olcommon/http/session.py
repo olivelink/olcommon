@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
-import pyramid_redis_sessions
+import pyramid_session_redis
 
 def includeme(config):
     registry = config.registry
     secret = registry["session_secret"][:32]
-    session_factory = pyramid_redis_sessions.RedisSessionFactory(
+    session_factory = pyramid_session_redis.RedisSessionFactory(
         secret,
         timeout=registry['cookie_session_timeout'],
         cookie_name=f"{registry['cookie_prefix']}.s",        
