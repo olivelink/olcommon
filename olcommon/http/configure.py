@@ -1,3 +1,4 @@
+from .security import SecurityPolicy
 from chameleon import PageTemplateLoader
 from datetime import date
 from datetime import datetime
@@ -60,6 +61,8 @@ def configure_registry(config):
 def configure_rendering(config):
     registry = config.registry
 
+    config.set_security_policy(SecurityPolicy())
+
     # Add adaptors to JSON renderer
     json_renderer = pyramid.renderers.JSON()
     json_renderer.add_adapter(datetime, json_datetime_adapter)
@@ -79,6 +82,7 @@ def configure_request(config):
     config.set_root_factory(root_factory)
     config.add_request_method(db_session_from_request, "db_session", reify=True)
     config.add_request_method(redis_from_request, "redis", reify=True)
+
 
 
 
@@ -120,7 +124,7 @@ def json_decimal_adapter(obj, request):
     return str(obj)
 
 
-class JSendRenderer(object):
+class JSendRenderer:
     def __init__(self, info):
         pass
 
