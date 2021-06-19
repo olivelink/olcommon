@@ -40,10 +40,6 @@ def configure_registry(config):
     # Configure registry
     settings = config.get_settings()
     registry = config.registry
-    registry["cookie_prefix"] = settings["cookie_prefix"]
-    registry["cookie_domain"] = settings["cookie_domain"]
-    registry["session_timeout"] = int(settings["session_timeout"])
-    registry["session_secret"] = settings["session_secret"]
     registry["docs_dist"] = settings["docs_dist"]
     
     templates_extra_builtins = {
