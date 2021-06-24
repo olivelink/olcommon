@@ -143,7 +143,7 @@ def get_jwt_claims(request):
     """
 
     # Check that we have a public key
-    registry = reequest.registry
+    registry = request.registry
     public_key = registry["jwt_public_key"]
     algorithm = registry["jwt_algorithm"]
     leeway = registry["jwt_leeway"]
