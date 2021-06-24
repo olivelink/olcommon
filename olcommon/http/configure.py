@@ -34,12 +34,16 @@ def configure_plugins(config):
     config.include("pyramid_exclog")
     config.add_settings({"tm.manager_hook": "pyramid_tm.explicit_manager"})
     config.include("pyramid_tm")
+
     if registry["is_debug"]:
         config.include("pyramid_debugtoolbar")
         config.include('pyramid_mailer.debug')
+        config.add_settings({"pyramid.reload_templates": "true"})
+
     else:
         config.include("pyramid_mailer")
 
+    config.include("pyramid_chameleon")
 
 def configure_registry(config):
     # Configure registry
@@ -78,7 +82,7 @@ def configure_registry(config):
 def configure_rendering(config):
     registry = config.registry
 
-    config.set_security_policy(SecurityPolicy())
+    config.add_subscriber(inject_template_vars, pyramid.events.BeforeRender)
 
     # Add adaptors to JSON renderer
     json_renderer = pyramid.renderers.JSON()
@@ -101,6 +105,8 @@ def configure_request(config):
     config.add_request_method(redis_from_request, "redis", reify=True)
     config.add_request_method(get_jwt_claims, "jwt_claims", reify=True)
     config.add_request_method(generate_jwt, "generate_jwt")
+    config.set_security_policy(SecurityPolicy())
+
 
 def configure_routes(config):
     config.include(".route.robots")
@@ -193,6 +199,14 @@ def generate_jwt(request, **claims):
     token = jwt.encode(claims, key=private_key, algorithm=algorithm)
     # Newer versions of jwt module return strings instead of bytes
     return token.decode() if isinstance(token, bytes) else token
+
+
+# Render globals
+
+def inject_template_vars(renderer_globals):
+    if renderer_globals.get("request", None) is not None:
+        renderer_globals["templates"] = renderer_globals["request"].registry["templates"]
+
 
 # JSON Renderer
 
