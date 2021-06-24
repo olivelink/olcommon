@@ -1,11 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from plone.testing import Layer
-import redis
-import redis.exceptions
-import requests
 
-import time
 import os
 import os.path
 import psycopg2

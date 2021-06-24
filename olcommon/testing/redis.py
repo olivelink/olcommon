@@ -3,12 +3,10 @@
 from plone.testing import Layer
 import redis
 import redis.exceptions
-import requests
 
 import time
 import os
 import os.path
-import psycopg2
 import shutil
 import subprocess
 import tempfile
