@@ -2,6 +2,13 @@ from pyramid.authorization import ACLHelper
 
 
 class SecurityPolicy:
+
+    def authenticated_userid(self, request):
+        identity = request.identity
+        if identity:
+            return identity.authenticated_userid
+        else:
+            return None
     
     def identity(self, request):
         claims = request.jwt_claims
