@@ -1,4 +1,5 @@
 from pyramid.response import FileResponse
+from pyramid.response import Response
 import os.path
 
 def add_pwa(config, path, name, *args, **kwargs):
@@ -31,16 +32,21 @@ def add_pwa(config, path, name, *args, **kwargs):
             )
             return debug_response
 
+        pwa_http_cache = 0
+
     # Read from the disk immidatly and returen the same
     # response every time.
     else:
-        response = FileResponse(
-            html_path,
-            cache_max_age=600,
-            content_type="text/html",
-        )
+        with open(html_path) as fin:
+            html_body = fin.read()
 
         def serve_pwa(request):
+            return Response(
+                body=html_body,
+                content_type="text/html",
+            )
             return response
+        
+        pwa_http_cache = 600
     
-    config.add_view(serve_pwa, route_name=name, request_method="GET")
+    config.add_view(serve_pwa, route_name=name, request_method="GET", http_cache=pwa_http_cache)
