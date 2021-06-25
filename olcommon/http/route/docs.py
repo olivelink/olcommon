@@ -54,6 +54,6 @@ def includeme(config):
         config.add_static_view(
             "++docs++",
             registry["docs_dist"],
-            permission="view-docs",
+            # permission="view-docs",
             cache_max_age=300,
         )
