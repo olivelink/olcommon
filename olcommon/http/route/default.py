@@ -21,3 +21,9 @@ def error(context, request):
         request=request,
     )
     return response
+
+
+def includeme(config):
+
+    if not config.registry['is_debug']:
+        config.scan('.default')

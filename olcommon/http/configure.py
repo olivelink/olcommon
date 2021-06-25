@@ -113,6 +113,7 @@ def configure_routes(config):
     config.include(".route.check")
     config.include(".route.test")
     config.include(".route.docs")
+    config.include(".route.default")
 
 # Request configuration
 
