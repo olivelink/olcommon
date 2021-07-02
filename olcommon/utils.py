@@ -3,7 +3,9 @@
 from numbers import Number
 from pyramid.decorator import reify
 from contextlib import contextmanager
+from ctq import acquire
 
+import ctq_sqlalchemy
 import re
 import urllib.parse
 
@@ -119,3 +121,16 @@ ORM_NAMING_CONVENTION = {
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "pk_%(table_name)s",
 }
+
+
+
+class RecordExtras(ctq_sqlalchemy.RecordExtras):
+    """Add extra helpers to a record class from SQLAlchemy to work
+    well with the resource tree.
+    """
+
+    @property
+    def registry(self):
+        """SQLAlchemy defins a regitry which we don't use
+        """
+        return acquire(self.__parent__).registry
