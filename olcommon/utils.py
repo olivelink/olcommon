@@ -4,9 +4,13 @@ from numbers import Number
 from pyramid.decorator import reify
 from contextlib import contextmanager
 from ctq import acquire
+from datetime import datetime
+from datetime import timedelta
 
+import bcrypt
 import ctq_sqlalchemy
 import re
+import secrets
 import urllib.parse
 
 
@@ -134,3 +138,58 @@ class RecordExtras(ctq_sqlalchemy.RecordExtras):
         """SQLAlchemy defins a regitry which we don't use
         """
         return acquire(self.__parent__).registry
+
+class UserPasswordBaseInvalidTokenError(Exception):
+    """The provided token was invalid."""
+
+class UserPasswordBase:
+    """Base recipie for a user object to implmenet user password.
+
+    The resulting object mustimplmenet the fllowing settable attributes:
+
+    - password_hash (bytes)
+    - password_reset_token (string)
+    - password_reset_expiry (datetime)
+
+    """
+
+    PASSWORD_RESET_TOKEN_SIZE = 24
+
+    @classmethod
+    def hash_password(cls, password):
+        return bcrypt.hashpw(password.encode("utf8"), bcrypt.gensalt())
+
+    def set_password(self, password):
+        password_hash = self.hash_password(password)
+        self.password_hash = password_hash
+
+    def set_password_with_token(self, password, token, now=None):
+        if not self.password_reset_token:
+            raise UserPasswordBaseInvalidTokenError()
+        now = now or datetime.utcnow()
+        if now > self.password_reset_expiry:
+            raise UserPasswordBaseInvalidTokenError()
+        if len(token) != self.PASSWORD_RESET_TOKEN_SIZE:
+            raise UserPasswordBaseInvalidTokenError()
+        if token != self.password_reset_token:
+            raise UserPasswordBaseInvalidTokenError()
+        self.set_password(password)
+        self.password_reset_token = None
+        self.password_reset_expiry = None     
+
+    def check_password(self, password):
+        if not password:
+            return False
+        if not self.password_hash:
+            return False
+        return bcrypt.checkpw(password.encode("utf8"), self.password_hash)
+
+    def initiate_password_reset(self):
+        """Generates and sets the password_reset_token and
+        password_reset_expiry fields, if a password reset is not yet in
+        progress or has already expired.
+        """
+        now = datetime.utcnow()
+        token = secrets.token_urlsafe(self.PASSWORD_RESET_TOKEN_SIZE)
+        self.password_reset_token = token
+        self.password_reset_expiry = now + timedelta(days=1)
