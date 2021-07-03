@@ -39,7 +39,7 @@ class PostgresqlLayer(Layer):
         # Track databases
         self["postgresql_db_count"] = 0
 
-        subprocess.run(
+        initdb_result = subprocess.run(
             (
                 f'{os.environ["POSTGRESQL_PREFIX"]}/bin/initdb',
                 "--auth",
@@ -53,10 +53,16 @@ class PostgresqlLayer(Layer):
                 "--username",
                 self["postgresql_user"],
             ),
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            capture_output=True,
         )
+        if initdb_result.returncode != 0:
+            raise Exception(
+                f"initdb failed: {dbinit_result.args}\n"
+                "-- stdout --\n"
+                f"{dbinit_result.stdout.decode('utf-8')}\n"
+                "-- stderr --\n"
+                f"{dbinit_result.stderr.decode('utf-8')}\n"
+            )
 
         self["postgresql_process"] = subprocess.Popen(
             (
