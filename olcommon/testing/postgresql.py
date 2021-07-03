@@ -57,11 +57,11 @@ class PostgresqlLayer(Layer):
         )
         if initdb_result.returncode != 0:
             raise Exception(
-                f"initdb failed: {dbinit_result.args}\n"
+                f"initdb failed: {initdb_result.args}\n"
                 "-- stdout --\n"
-                f"{dbinit_result.stdout.decode('utf-8')}\n"
+                f"{initdb_result.stdout.decode('utf-8')}\n"
                 "-- stderr --\n"
-                f"{dbinit_result.stderr.decode('utf-8')}\n"
+                f"{initdb_result.stderr.decode('utf-8')}\n"
             )
 
         self["postgresql_process"] = subprocess.Popen(
