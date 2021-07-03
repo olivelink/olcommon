@@ -114,6 +114,7 @@ def configure_routes(config):
     config.include(".route.test")
     config.include(".route.docs")
     config.include(".route.default")
+    config.include(".route.api")
 
 # Request configuration
 
