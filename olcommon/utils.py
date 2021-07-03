@@ -112,8 +112,9 @@ def root_context(registry):
     try:
         yield root
         root.transaction.commit()
-    finally:
-        root.transaction.rollback()
+    except Exception as e:
+        root.transaction.abort()
+        raise e
 
 # Recommended naming convention used by Alembic, as various different database
 # providers will autogenerate vastly different names making migrations more
