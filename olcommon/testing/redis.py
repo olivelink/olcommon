@@ -46,7 +46,7 @@ class RedisLayer(Layer):
     def startRedis(self):
         self["redis_process"] = subprocess.Popen(
             (
-                f'{os.environ["REDIS_PREFIX"]}/src/redis-server',
+                os.environ["REDIS_SERVER"],
                 self["redis_configuration_file"],
             ),
             stdin=subprocess.DEVNULL,
