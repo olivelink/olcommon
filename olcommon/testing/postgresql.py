@@ -8,6 +8,7 @@ import psycopg2
 import shutil
 import subprocess
 import tempfile
+import time
 
 
 class PostgresqlLayer(Layer):
@@ -85,7 +86,17 @@ class PostgresqlLayer(Layer):
     def testSetUp(self):
         self["postgresql_db_count"] += 1
         self["postgresql_database"] = f'unittest_{self["postgresql_db_count"]}'
-        conn = psycopg2.connect(self["postgresql_postgres_url"])
+        retries = 0
+        conn = None
+        while conn is None:
+            try:
+                conn = psycopg2.connect(self["postgresql_postgres_url"])
+            except psycopg2.OperationalError as err:
+                if retries > 5:
+                    raise err
+                else:
+                    time.sleep(0.5)
+                    retries += 1
         conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
         cur = conn.cursor()
         cur.execute(f'create database {self["postgresql_database"]};')
