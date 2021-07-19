@@ -1,5 +1,7 @@
+from . import sendgrid_mailer
 from .utils import yesish
 
+import os
 import sqlalchemy.orm
 import sqlalchemy.pool
 import redis
@@ -24,3 +26,17 @@ def configure_registry(registry: dict, settings: dict):
     registry["redis"] = redis.StrictRedis.from_url(
         settings["redis_url"], decode_responses=False
     )
+
+    registry["site_email"] = settings["site_email"]
+    registry["site_email_from_name"] = settings["site_email_from_name"]
+    registry["site_noreply_email"] = settings["site_noreply_email"]
+    registry["use_debug_mailer"] = yesish(os.environ.get("use_debug_mailer")) or registry["is_debug"]
+    if registry["use_debug_mailer"] :
+        registry["sendgrid_smtp_mailer"] = None
+    else:
+        registry["sendgrid_smtp_mailer"] = sendgrid_mailer.SendgridMailer(
+            hostname=settings["mail.host"],
+            port=settings["mail.port"],
+            sendgrid_api_key=settings["sendgrid_api_key"],
+            sendgrid_template_generic=settings["sendgrid_template_generic"],
+        )

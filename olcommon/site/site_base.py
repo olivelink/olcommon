@@ -26,10 +26,12 @@ class SiteBase(object):
             def __init__(self, **kw):
                 super().__init__(transaction_manager=tm, **kw)
 
-        if registry["is_debug"]:
+        if registry["use_debug_mailer"]:
             mailer = pyramid_mailer.mailer.DebugMailer('mail')  # Store mail in 'mail' dir in CWD
         else:
-            mailer = MailerTmp.from_settings(registry["settings"], "mail.")
+            mailer = pyramid_mailer.Mailer(
+                transaction_manager=tm, smtp_mailer=registry["sendgrid_mailer"]
+            )
 
         return cls(**{
             "registry": registry,
