@@ -4,14 +4,19 @@ from numbers import Number
 from pyramid.decorator import reify
 from contextlib import contextmanager
 from ctq import acquire
+from ctq import resource_path_names
 from datetime import datetime
 from datetime import timedelta
 
+import logging
 import bcrypt
 import ctq_sqlalchemy
 import re
 import secrets
 import urllib.parse
+
+
+logger = logging.getLogger("app")
 
 
 PATTERN_API_DOMAIN = re.compile(
@@ -140,6 +145,11 @@ class RecordExtras(ctq_sqlalchemy.RecordExtras):
         """
         return acquire(self.__parent__).registry
 
+    def __str__(self):
+        names = resource_path_names(self)
+        path = '/'.join(names)
+        return f"<{self.__class__.__name__} {path}>"
+
 class UserPasswordBaseInvalidTokenError(Exception):
     """The provided token was invalid."""
 
@@ -161,10 +171,12 @@ class UserPasswordBase:
         return bcrypt.hashpw(password.encode("utf8"), bcrypt.gensalt())
 
     def set_password(self, password):
+        logger.info(f"Set password for: {self}")
         password_hash = self.hash_password(password)
         self.password_hash = password_hash
 
     def set_password_with_token(self, password, token, now=None):
+        logger.info(f"Set password with token for: {self}")
         if not self.password_reset_token:
             raise UserPasswordBaseInvalidTokenError()
         now = now or datetime.utcnow()
@@ -190,6 +202,7 @@ class UserPasswordBase:
         password_reset_expiry fields, if a password reset is not yet in
         progress or has already expired.
         """
+        logger.info(f"Initate password reset for: {self}")
         now = datetime.utcnow()
         token = secrets.token_urlsafe(self.PASSWORD_RESET_TOKEN_SIZE)
         self.password_reset_token = token
