@@ -170,7 +170,7 @@ class UserPasswordBase:
         now = now or datetime.utcnow()
         if now > self.password_reset_expiry:
             raise UserPasswordBaseInvalidTokenError()
-        if len(token) != self.PASSWORD_RESET_TOKEN_SIZE:
+        if len(token) == 0:
             raise UserPasswordBaseInvalidTokenError()
         if token != self.password_reset_token:
             raise UserPasswordBaseInvalidTokenError()
