@@ -161,6 +161,7 @@ class UserPasswordBase:
     - password_hash (bytes)
     - password_reset_token (string)
     - password_reset_expiry (datetime)
+    - nounce (big int)
 
     """
 
@@ -174,6 +175,7 @@ class UserPasswordBase:
         logger.info(f"Set password for: {self}")
         password_hash = self.hash_password(password)
         self.password_hash = password_hash
+        self.change_nounce()
 
     def set_password_with_token(self, password, token, now=None):
         logger.info(f"Set password with token for: {self}")
@@ -207,3 +209,7 @@ class UserPasswordBase:
         token = secrets.token_urlsafe(self.PASSWORD_RESET_TOKEN_SIZE)
         self.password_reset_token = token
         self.password_reset_expiry = now + timedelta(days=1)
+
+    def change_nounce(self):
+        logger.info(f"Change nounce for: {self}")
+        self.nounce += 1
