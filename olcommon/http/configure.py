@@ -99,7 +99,7 @@ def configure_rendering(config):
 
 def configure_request(config):
     registry = config.registry
-
+    config.add_request_method(site_factory, "site", reify=True)
     config.set_root_factory(root_factory)
     config.add_request_method(db_session_from_request, "db_session", reify=True)
     config.add_request_method(redis_from_request, "redis", reify=True)
@@ -118,8 +118,11 @@ def configure_routes(config):
 
 # Request configuration
 
-def root_factory(request):
+def site_factory(request):
     return request.registry["root_class"].from_request(request)
+
+def root_factory(request):
+    return request.site
 
 
 def db_session_from_request(request):
