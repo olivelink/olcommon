@@ -176,6 +176,8 @@ class UserPasswordBase:
         password_hash = self.hash_password(password)
         self.password_hash = password_hash
         self.change_nounce()
+        self.password_reset_token = None
+        self.password_reset_expiry = None
 
     def set_password_with_token(self, password, token, now=None):
         logger.info(f"Set password with token for: {self}")
@@ -190,7 +192,7 @@ class UserPasswordBase:
             raise UserPasswordBaseInvalidTokenError()
         self.set_password(password)
         self.password_reset_token = None
-        self.password_reset_expiry = None     
+        self.password_reset_expiry = None
 
     def check_password(self, password):
         if not password:
