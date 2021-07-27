@@ -9,6 +9,7 @@ from pyramid.view import view_config
 from traceback import format_exception
 from traceback import format_exception_only
 
+import sqlalchemy
 import pyramid.events
 
 
@@ -156,6 +157,15 @@ class HandleClientError(HandleException):
             return ': '.join(parts)
 
         return None
+
+
+@view_config(route_name="api", context="sqlalchemy.exc.IntegrityError", renderer="json")
+class HandleSQLAlchemyIntegrityError(HandleException):
+    """Handle a client error and return a json object in the jsend message spec format"""
+
+    status = "fail"
+    default_message = "Database integrity error."
+    code = 400
 
 
 def includeme(config):
