@@ -13,6 +13,7 @@ import jwt
 import os
 import os.path
 import pyramid.renderers
+import pyramid_mailer
 import zope.sqlalchemy
 
 
