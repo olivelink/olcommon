@@ -30,7 +30,7 @@ class SiteBase(object):
             mailer = pyramid_mailer.mailer.DebugMailer('mail')  # Store mail in 'mail' dir in CWD
         else:
             mailer = pyramid_mailer.Mailer(
-                transaction_manager=tm, smtp_mailer=registry["sendgrid_mailer"]
+                transaction_manager=tm, smtp_mailer=registry["sendgrid_smtp_mailer"]
             )
 
         return cls(**{
