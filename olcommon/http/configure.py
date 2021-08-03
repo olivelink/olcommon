@@ -34,15 +34,9 @@ def configure_plugins(config):
     config.include("pyramid_exclog")
     config.add_settings({"tm.manager_hook": "pyramid_tm.explicit_manager"})
     config.include("pyramid_tm")
-
     if registry["is_debug"]:
         config.include("pyramid_debugtoolbar")
-        config.include('pyramid_mailer.debug')
         config.add_settings({"pyramid.reload_templates": "true"})
-
-    else:
-        config.include("pyramid_mailer")
-
     config.include("pyramid_chameleon")
 
 def configure_registry(config):
@@ -106,6 +100,8 @@ def configure_request(config):
     config.add_request_method(get_jwt_claims, "jwt_claims", reify=True)
     config.add_request_method(generate_jwt, "generate_jwt")
     config.set_security_policy(SecurityPolicy())
+    config.add_request_method(mailer_from_reequest, "mailer", reify=True)
+
 
 
 def configure_routes(config):
@@ -132,6 +128,13 @@ def db_session_from_request(request):
     zope.sqlalchemy.register(db_session, transaction_manager=request.tm)
     return db_session
 
+def mailer_from_reequest(request):
+    if request.registry["use_debug_mailer"]:
+        mailer = pyramid_mailer.mailer.DebugMailer('mail')  # Store mail in 'mail' dir in CWD
+    else:
+        mailer = pyramid_mailer.Mailer(
+            transaction_manager=request.tm, smtp_mailer=request.registry["sendgrid_smtp_mailer"]
+        )
 
 def redis_from_request(request):
     return request.registry["redis"]
