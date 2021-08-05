@@ -2,8 +2,14 @@ from pyramid.response import FileResponse
 from pyramid.response import Response
 import os.path
 
-def add_pwa(config, path, name, *args, **kwargs):
+
+def add_pwa(config, path, name, file="index.html", *args, **kwargs):
     """Configure a progressive web app on a route"""
+    add_pwa_resource(config, path, name)
+    add_pwa_view(config, path, name, file, *args, **kwargs)
+
+
+def add_pwa_resource(config, path, name):
     registry = config.registry
 
     # expose the assets
@@ -14,11 +20,15 @@ def add_pwa(config, path, name, *args, **kwargs):
         cache_max_age=5 if registry["is_debug"] else 600,
     )
 
+
+def add_pwa_view(config, path, name, html_file="index.html", *args, **kwargs):
+    registry = config.registry
+
     # Add html route
     config.add_route(name, *args, **kwargs)
 
     # Construct html view
-    html_path = os.path.join(path, "index.html")
+    html_path = os.path.join(path, html_file)
 
     # Use a view that reads the disk on each request if we
     # are in debug mode

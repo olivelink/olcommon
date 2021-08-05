@@ -17,5 +17,6 @@ class SecurityPolicy:
         return None
 
     def permits(self,request, context, permission):
-        principals = request.site.principals_for_identity(request.identity)
+        claims = request.jwt_claims
+        principals = request.site.principals_for_identity(request.identity, claims)
         return ACLHelper().permits(context, principals, permission)
