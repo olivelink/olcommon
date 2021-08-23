@@ -3,7 +3,7 @@ from decimal import Decimal
 from uuid import UUID
 
 import json
-import pyramid_mailer
+import pyramid_mailer.message
 
 
 class SendGridBehavior:
@@ -85,7 +85,7 @@ class SendGridBehavior:
                 {'personalizations': batch_items, **payload},
                 cls=CustomJSONEncoder,
             )
-            acquire(self).mailersend(
+            acquire(self).mailer.send(
                 pyramid_mailer.message.Message(
                     subject='No subject',
                     recipients=[registry['site_noreply_email']],
