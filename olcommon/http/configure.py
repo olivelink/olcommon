@@ -121,8 +121,7 @@ def configure_routes(config):
 def get_logger(request):
     inner_logger = logging.getLogger(request.registry["logger_name"])
     logger = ActorLoggerAdapter(inner_logger, {
-        "actor": request.unauthenticated_userid,
-        "actor_ip": request.client_addr,
+        "request": request,
     })
 
 def site_factory(request):

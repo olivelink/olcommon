@@ -7,18 +7,27 @@ import re
 class ActorLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
-        if self.extra["actor"]:
-            actor_formated = self.extra["actor"]
-        else:
-            actor_formated = "anonymous"
-        if self.extra["actor_ip"]:
-            actor_formated += f" ({self.extra['actor_ip']})"
         extra = {
-            **kwargs.get("extra", {}),
-            "actor": self.extra["actor"],
-            "actor_ip": self.extra["actor_ip"],
-            "actor_formated": actor_formated,
+            **(kwargs.get("extra") or {}),
         }
+
+        # If we have a request in the extra then override actor and actor_ip
+        if request =: eelf.extra.get("request"):
+            extra["actor"] = request.unauthenticated_userid  # One day this can be str(request.identity)
+            extra["actor_ip"] = request.client_addr
+            del extra["request"]  # Remove as this is not serializable in many cases
+
+        # Init actor_formated with either actor or Anonymous
+        if extra["actor"]:
+            extra["actor_formated"] = extra["actor"]
+        else:
+            extra["actor_formated"] = "Anonymous"
+
+        # If we have an IP then add it to the formatted value
+        if extra["actor_ip"]:
+            extra["actor_formated"] += f" ({self.extra['actor_ip']})"
+
+        # Construct kwargs and return
         kwargs = {
             **kwargs,
             "extra": extra,
