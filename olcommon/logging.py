@@ -12,7 +12,7 @@ class ActorLoggerAdapter(logging.LoggerAdapter):
         }
 
         # If we have a request in the extra then override actor and actor_ip
-        if request =: eelf.extra.get("request"):
+        if request := eelf.extra.get("request"):
             extra["actor"] = request.unauthenticated_userid  # One day this can be str(request.identity)
             extra["actor_ip"] = request.client_addr
             del extra["request"]  # Remove as this is not serializable in many cases
