@@ -1,10 +1,12 @@
 from . import sendgrid_mailer
 from .utils import yesish
+from .logging import ActorLoggerAdapter
 
 import os
 import sqlalchemy.orm
 import sqlalchemy.pool
 import redis
+import logging
 
 
 def configure_registry(registry: dict, settings: dict):
@@ -12,6 +14,10 @@ def configure_registry(registry: dict, settings: dict):
     """
     registry["settings"] = settings
     registry["is_debug"] = yesish(settings["is_debug"])
+    registry["logger_name"] = "app"
+    inner_logger = logging.getLogger(registry["logger_name"])
+    logger = ActorLoggerAdapter(inner_logger, {"actor": "system", "actor_ip": None})
+    registry["logger"] = logger
 
     assert registry["root_class"], "No root class defined in the registry"
 

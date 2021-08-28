@@ -1,20 +1,21 @@
+import logging
 import pyramid_mailer
 import zope.sqlalchemy
 import transaction as zope_transaction
-
 
 class SiteBase(object):
     """A primitive site"""
     
     user_email_store_lower_case = True
 
-    def __init__(self, *args, registry, transaction, db_session, redis, mailer, **kwargs):
+    def __init__(self, *args, registry, transaction, db_session, redis, mailer, logger, **kwargs):
         super().__init__(*args, **kwargs)
         self.registry = registry
         self.mailer = mailer
         self.transaction = transaction
         self.db_session = db_session
         self.redis = redis
+        self.logger = logger
 
     @classmethod
     def from_registry(cls, registry, *args, **kwargs):
@@ -39,6 +40,7 @@ class SiteBase(object):
             "db_session": db_session,
             "redis": registry["redis"],
             "mailer": mailer,
+            "logger": registry["logger"],
             **kwargs,
         })
 
@@ -51,6 +53,7 @@ class SiteBase(object):
             'redis': request.redis,
             'mailer': request.mailer,
             'transaction': request.tm,
+            "logger": request.logger,
             **kwargs,
         }
         return cls(**kwargs)

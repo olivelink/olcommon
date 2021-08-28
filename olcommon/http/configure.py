@@ -1,3 +1,4 @@
+from ..logging import ActorLoggerAdapter
 from .security import SecurityPolicy
 from chameleon import PageTemplateLoader
 from datetime import date
@@ -15,6 +16,7 @@ import os.path
 import pyramid.renderers
 import pyramid_mailer
 import zope.sqlalchemy
+import logging
 
 
 TEMPLATE_DIR = os.path.join(dirname(__file__), "templates")
@@ -94,6 +96,7 @@ def configure_rendering(config):
 
 def configure_request(config):
     registry = config.registry
+    config.add_request_method(get_logger, "logger", reify=True)
     config.add_request_method(site_factory, "site", reify=True)
     config.set_root_factory(root_factory)
     config.add_request_method(db_session_from_request, "db_session", reify=True)
@@ -114,6 +117,13 @@ def configure_routes(config):
     config.include(".route.api")
 
 # Request configuration
+
+def get_logger(request):
+    inner_logger = logging.getLogger(request.registry["logger_name"])
+    logger = ActorLoggerAdapter(inner_logger, {
+        "actor": request.unauthenticated_userid,
+        "actor_ip": request.client_addr,
+    })
 
 def site_factory(request):
     return request.registry["root_class"].from_request(request)
@@ -139,7 +149,6 @@ def mailer_from_reequest(request):
 
 def redis_from_request(request):
     return request.registry["redis"]
-
 
 def get_jwt_claims(request):
     """Return the JSON web token claim from the request object.

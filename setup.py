@@ -35,4 +35,6 @@ setup(name='olcommon',
         'ctq-sqlalchemy',
 
         'psycopg2-binary',
+
+        'JSON-log-formatter',
       ])
