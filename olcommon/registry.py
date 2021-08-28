@@ -36,7 +36,7 @@ def configure_registry(registry: dict, settings: dict):
     registry["site_email"] = settings["site_email"]
     registry["site_email_from_name"] = settings["site_email_from_name"]
     registry["site_noreply_email"] = settings["site_noreply_email"]
-    registry["use_debug_mailer"] = yesish(os.environ.get("use_debug_mailer")) or registry["is_debug"]
+    registry["use_debug_mailer"] = yesish(os.environ.get("use_debug_mailer", registry["is_debug"]))
     if registry["use_debug_mailer"] :
         registry["sendgrid_smtp_mailer"] = None
     else:

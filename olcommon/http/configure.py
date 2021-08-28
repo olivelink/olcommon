@@ -141,9 +141,9 @@ def db_session_from_request(request):
 
 def mailer_from_reequest(request):
     if request.registry["use_debug_mailer"]:
-        mailer = pyramid_mailer.mailer.DebugMailer('mail')  # Store mail in 'mail' dir in CWD
+        return pyramid_mailer.mailer.DebugMailer('mail')  # Store mail in 'mail' dir in CWD
     else:
-        mailer = pyramid_mailer.Mailer(
+        return pyramid_mailer.Mailer(
             transaction_manager=request.tm, smtp_mailer=request.registry["sendgrid_smtp_mailer"]
         )
 

@@ -71,6 +71,7 @@ class SendgridMailer(SMTPMailer):
             json=payload,
             headers={
                 'Authorization': f'Bearer {self.sendgrid_api_key}',
+                'Content-Type': 'application/json',
             },
         )
         try:
