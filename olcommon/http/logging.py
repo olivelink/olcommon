@@ -90,13 +90,20 @@ def log(request, response, exception_raised, latency):
             "latency": latency,                
         }
 
-        # Emit loggs
-        if exc_info or (500 <= int(response_status) < 600):
-            logger_access.error(message, exc_info=exc_info, extra=extra)
-        elif route_name == "check" and view_name == "app":  # Don't log app alive requests
-            logger_access.debug(message, extra=extra)
+        # Select level
+        if route_name == "check" and view_name == "app":  # Don't log app alive requests
+            emit =logger_access.debug
+        elif 500 <= int(response_status) < 600:
+            emit = logger_access.error
+        elif 400 <= int(response_status) < 500:
+            emit = logger_access.info
+        elif exc_info:
+            emit = logger_access.error
         else:
-            logger_access.info(message, extra=extra)
+            emit = logger_access.info
+
+        # Emit
+        emit(message, exc_info=exc_info, extra=extra)
 
     except:
         registry["logger"].exception("An error occured whilst logging to the access logger.")
