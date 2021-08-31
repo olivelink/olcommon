@@ -106,5 +106,5 @@ def log(request, response, exception_raised, latency):
         emit(message, exc_info=exc_info, extra=extra)
 
     except:
-        registry["logger"].exception("An error occured whilst logging to the access logger.")
+        registry["get_logger"]().exception("An error occured whilst logging to the access logger.")
         raise
