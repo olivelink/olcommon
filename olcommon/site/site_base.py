@@ -58,6 +58,9 @@ class SiteBase(object):
         }
         return cls(**kwargs)
 
+    def authenticated_userid_for_jwt_claims(self, claims):
+        return claims["sub"]
+
     def identity_for_jwt_claims(self, claims):
         return None
 
