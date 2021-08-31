@@ -1,7 +1,6 @@
 from json_log_formatter import VerboseJSONFormatter
 
-import logging
-import re
+import logging.handlers
 
 
 class ActorLoggerAdapter(logging.LoggerAdapter):
