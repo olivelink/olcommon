@@ -33,27 +33,27 @@ class GoogleLoggingJSONFormatter(VerboseJSONFormatter):
 
     def json_record(self, message, extra, record):
         extra['logging.googleapis.com/severity'] = record.levelname
-        if actor := getattr(record, "actor"):
+        if actor := getattr(record, "actor", None):
             extra["actor"] = actor
-        if actor_ip := getattr(record, "actor_ip"):
+        if actor_ip := getattr(record, "actor_ip", None):
             extra["actorIp"] = actor_ip
-        if request_method := getattr(record, "request_method"):
+        if request_method := getattr(record, "request_method", None):
             extra["requestMethod"] = request_method
-        if request_url := getattr(record, "request_url"):
+        if request_url := getattr(record, "request_url", None):
             extra["requestUrl"] = request_url
-        if response_status := getattr(record, "response_status"):
+        if response_status := getattr(record, "response_status", None):
             extra["responseStatus"] = response_status
-        if response_content_length := getattr(record, "response_content_length"):
+        if response_content_length := getattr(record, "response_content_length", None):
             extra["responseContentLength"] = response_content_length
-        if user_agent := getattr(record, "user_agent"):
+        if user_agent := getattr(record, "user_agent", None):
             extra["userAgent"] = user_agent
-        if referer := getattr(record, "referer"):
+        if referer := getattr(record, "referer", None):
             extra["referer"] = referer
-        if route_name := getattr(record, "route_name"):
+        if route_name := getattr(record, "route_name", None):
             extra["routeName"] = route_name
-        if view_name := getattr(record, "view_name"):
+        if view_name := getattr(record, "view_name", None):
             extra["viewName"] = view_name
-        if latency := getattr(record, "latency"):
+        if latency := getattr(record, "latency", None):
             extra["latency"] = latency
         return super().json_record(message, extra, record)
 
