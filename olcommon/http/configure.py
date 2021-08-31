@@ -34,7 +34,6 @@ def includeme(config):
 
 def configure_plugins(config):
     registry = config.registry
-    config.include("pyramid_exclog")
     config.add_settings({"tm.manager_hook": "pyramid_tm.explicit_manager"})
     config.include("pyramid_tm")
     if registry["is_debug"]:
@@ -105,8 +104,13 @@ def configure_request(config):
     config.add_request_method(generate_jwt, "generate_jwt")
     config.set_security_policy(SecurityPolicy())
     config.add_request_method(mailer_from_reequest, "mailer", reify=True)
-
-
+    config.add_tween(
+        "olcommon.http.logging.logger_handler_tween_factory",
+        over=[
+            'pyramid.tweens.EXCVIEW',
+            'pyramid_tm.tm_tween_factory',
+        ],
+    )
 
 def configure_routes(config):
     config.include(".route.robots")
