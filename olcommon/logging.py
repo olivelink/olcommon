@@ -7,16 +7,14 @@ class ActorLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
         extra = {
+            **self.extra,
             **(kwargs.get("extra") or {}),
         }
 
         # If we have a request in the extra then override actor and actor_ip
-        if request := self.extra.get("request"):
-            extra["actor"] = request.unauthenticated_userid  # One day this can be str(request.identity)
-            extra["actor_ip"] = request.client_addr
-        else:
-            extra["actor"] = extra.get("actor")
-            extra["actor_ip"] = extra.get("actor_ip")
+        if request := extra.get("request"):
+            extra["actor"] = extra.get("actor") or request.unauthenticated_userid  # One day this can be str(request.identity)
+            extra["actor_ip"] = extra.get("actor_ip") or request.client_addr
 
         extra["actor_formatted"] = f'{extra["actor_ip"] or "-"} {extra["actor"] or "-"}'
 
@@ -26,6 +24,9 @@ class ActorLoggerAdapter(logging.LoggerAdapter):
             "extra": extra,
         }
         return msg, kwargs
+
+    def set_actor(self, actor):
+        self.extra["actor"] = actor
 
 
 class GoogleLoggingJSONFormatter(VerboseJSONFormatter):

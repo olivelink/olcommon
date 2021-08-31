@@ -15,9 +15,12 @@ def configure_registry(registry: dict, settings: dict):
     registry["settings"] = settings
     registry["is_debug"] = yesish(settings["is_debug"])
     registry["logger_name"] = "app"
-    inner_logger = logging.getLogger(registry["logger_name"])
-    logger = ActorLoggerAdapter(inner_logger, {"actor": "system", "actor_ip": None})
-    registry["logger"] = logger
+
+    def get_logger(name=None, actor=None, actor_ip=None):
+        inner_logger = logging.getLogger(name or registry["logger_name"])
+        return ActorLoggerAdapter(inner_logger, {"actor": actor, "actor_ip": actor_ip})
+
+    registry["get_logger"] = get_logger
 
     assert registry["root_class"], "No root class defined in the registry"
 

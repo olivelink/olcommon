@@ -95,7 +95,7 @@ def configure_rendering(config):
 
 def configure_request(config):
     registry = config.registry
-    config.add_request_method(get_logger, "logger", reify=True)
+    config.add_request_method(get_logger, "get_logger")
     config.add_request_method(site_factory, "site", reify=True)
     config.set_root_factory(root_factory)
     config.add_request_method(db_session_from_request, "db_session", reify=True)
@@ -122,8 +122,9 @@ def configure_routes(config):
 
 # Request configuration
 
-def get_logger(request):
-    inner_logger = logging.getLogger(request.registry["logger_name"])
+def get_logger(request, name=None):
+    name = name or request.registry["logger_name"]
+    inner_logger = logging.getLogger(name)
     logger = ActorLoggerAdapter(inner_logger, {
         "request": request,
     })
