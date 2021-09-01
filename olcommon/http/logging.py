@@ -92,10 +92,8 @@ def log(request, response, exception_raised, latency):
 
         # Select level
         response_status = int(response_status)
-        if route_name == "check" and view_name == "app":  # Don't log app alive requests
+        if route_name == "check":  # Send check requests to debug only
             emit =logger_access.debug
-        elif response_status == 520:
-            emit = logger_access.info  # OL uses 520 as a status code for failing checks
         elif 500 <= response_status < 600:
             emit = logger_access.error
         elif 400 <= response_status < 500:
