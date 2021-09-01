@@ -4,12 +4,11 @@ from pyramid.authorization import ACLHelper
 class SecurityPolicy:
 
     def authenticated_userid(self, request):
-        identity = request.identity
-        if identity:
-            return identity.authenticated_userid
-        else:
-            return None
-    
+        claims = request.jwt_claims
+        if claims:
+            return request.site.authenticated_userid_for_jwt_claims(claims)
+        return None
+        
     def identity(self, request):
         claims = request.jwt_claims
         if claims and "access" in claims.get("aud", []):

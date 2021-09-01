@@ -214,4 +214,6 @@ class UserPasswordBase:
 
     def change_nounce(self):
         logger.info(f"Change nounce for: {self}")
+        if self.nounce is None:
+            self.nounce = 0
         self.nounce += 1
