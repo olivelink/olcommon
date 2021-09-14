@@ -60,3 +60,23 @@ def add_pwa_view(config, path, name, html_file="index.html", *args, **kwargs):
         pwa_http_cache = 600
     
     config.add_view(serve_pwa, route_name=name, request_method="GET", http_cache=pwa_http_cache)
+
+
+def add_pwa_pt_view(config, path, name, template_path="index.pt", *args, **kwargs):
+    registry = config.registry
+
+    # Add html route
+    config.add_route(name, *args, **kwargs)
+
+    # Construct html view
+    template_path = os.path.join(path, template_path)
+
+    def serve_pwa(request):
+        return {}
+
+    if registry["is_debug"]:
+        pwa_http_cache = 0
+    else:
+        pwa_http_cache = 600
+    
+    config.add_view(serve_pwa, route_name=name, request_method="GET", renderer=template_path, http_cache=pwa_http_cache)
