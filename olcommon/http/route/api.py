@@ -145,18 +145,13 @@ class HandleClientError(HandleException):
         if super_message:
             return super_message
         
-        # Construct message
-        parts = []
         title = getattr(self.context, 'title', None)
-        if title:
-            parts.append(title)
         message = getattr(self.context, 'message', None)
-        if message:
-            parts.append(message)
-        if len(parts) > 0:
-            return ': '.join(parts)
 
-        return None
+        if title and message:
+            return f"{message} ({title})"
+
+        return message or title or None
 
 
 @view_config(route_name="api", context="sqlalchemy.exc.IntegrityError", renderer="json")
