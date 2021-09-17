@@ -125,7 +125,7 @@ def configure_routes(config):
 def get_logger(request, name=None):
     name = name or request.registry["logger_name"]
     inner_logger = logging.getLogger(name)
-    logger = ActorLoggerAdapter(inner_logger, {
+    return ActorLoggerAdapter(inner_logger, {
         "request": request,
     })
 
