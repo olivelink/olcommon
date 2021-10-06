@@ -17,6 +17,7 @@ class SendGridBehavior:
         reply_to_name=None,
         reply_to_addr=None,
         template_id=None,
+        attachments=None,
     ):
         """Sends an email to a one or more recipients.
 
@@ -66,6 +67,9 @@ class SendGridBehavior:
         if template_id:
             payload['template_id'] = template_id
 
+        if attachments:
+            payload['attachments'] = attachments
+
         # JSON encoder to convert decimals to strings (since will be used as strings in emails)
         class CustomJSONEncoder(json.JSONEncoder):
             def default(self, o):
@@ -108,6 +112,7 @@ class SendGridBehavior:
         data=None,
         cc_addr=None,
         cc_name=None,
+        attachments=None,
     ):
         """Send an email using the sendgrid templates through the SMTP API
 
@@ -148,4 +153,5 @@ class SendGridBehavior:
             reply_to_name,
             reply_to_addr,
             template_id,
+            attachments,
         )
