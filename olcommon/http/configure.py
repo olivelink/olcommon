@@ -152,7 +152,7 @@ def mailer_from_reequest(request):
         )
 
 def redis_from_request(request):
-    return request.registry["redis"]
+    return request.registry["get_redis"]()
 
 def get_jwt_claims(request):
     """Return the JSON web token claim from the request object.
