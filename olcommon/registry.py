@@ -32,10 +32,9 @@ def configure_registry(registry: dict, settings: dict):
     registry["db_session_factory"] = sqlalchemy.orm.sessionmaker()
     registry["db_session_factory"].configure(bind=registry["db_engine"])
 
-    registry["redis"] = redis.StrictRedis.from_url(
+    registry["get_redis"] = lambda: redis.StrictRedis.from_url(
         settings["redis_url"], decode_responses=False
     )
-
     registry["site_email"] = settings["site_email"]
     registry["site_email_from_name"] = settings["site_email_from_name"]
     registry["site_noreply_email"] = settings["site_noreply_email"]

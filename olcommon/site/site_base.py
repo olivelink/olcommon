@@ -38,7 +38,7 @@ class SiteBase(object):
             "registry": registry,
             "transaction": tm,
             "db_session": db_session,
-            "redis": registry["redis"],
+            "redis": registry["get_redis"](),
             "mailer": mailer,
             "get_logger": registry["get_logger"],
             **kwargs,
