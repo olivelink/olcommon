@@ -1,5 +1,5 @@
-from . import sendgrid_mailer
 from .utils import yesish
+from .utils.sendgrid_mailer import SendgridMailer
 from .logging import ActorLoggerAdapter
 
 import os
