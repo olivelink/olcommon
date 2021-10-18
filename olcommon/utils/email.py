@@ -1,4 +1,7 @@
+from email.utils import getaddresses
+
 import re
+
 
 # VALID_USER_EMAIL checks for a semi-validish email. Of most concern
 # it will fail to validate emails with unsafe url charactors
@@ -30,3 +33,13 @@ def is_valid_email(email):
     if len(email) > 254:
         return False
     return VALID_USER_EMAIL.match(email) is not None
+
+
+def email_normalize(email):
+    addresses = getaddresses([email])
+    if len(addresses) == 1:
+        email = addresses[0][1]
+    email = email.lower().strip()
+    if is_valid_email(email):
+        return email
+    return None
