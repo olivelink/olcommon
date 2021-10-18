@@ -98,6 +98,8 @@ def configure_request(config):
     config.add_request_method(get_logger, "get_logger")
     config.add_request_method(site_factory, "site", reify=True)
     config.set_root_factory(root_factory)
+    config.add_request_method(get_user, "user", reify=True)
+    config.add_request_method(get_principals, "principals", reify=True)
     config.add_request_method(db_session_from_request, "db_session", reify=True)
     config.add_request_method(redis_from_request, "redis", reify=True)
     config.add_request_method(get_jwt_claims, "jwt_claims", reify=True)
@@ -132,8 +134,19 @@ def get_logger(request, name=None):
 def site_factory(request):
     return request.registry["root_class"].from_request(request)
 
+
 def root_factory(request):
     return request.site
+
+
+def get_user(request):
+    if identity := request.identity:
+        return request.site.get_user_for_identity(identity)
+    return None
+
+
+def get_principals(request):
+    return request.site.get_principals(request.identity, request.user)
 
 
 def db_session_from_request(request):
