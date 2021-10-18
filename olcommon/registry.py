@@ -42,7 +42,7 @@ def configure_registry(registry: dict, settings: dict):
     if registry["use_debug_mailer"] :
         registry["sendgrid_smtp_mailer"] = None
     else:
-        registry["sendgrid_smtp_mailer"] = sendgrid_mailer.SendgridMailer(
+        registry["sendgrid_smtp_mailer"] = SendgridMailer(
             hostname=settings["mail.host"],
             port=settings["mail.port"],
             sendgrid_api_key=settings["sendgrid_api_key"],
