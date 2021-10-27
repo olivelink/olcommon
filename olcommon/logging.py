@@ -12,8 +12,6 @@ class ActorLoggerAdapter(logging.LoggerAdapter):
             "actor_ip": None,
             **self.extra,
             **(kwargs.get("extra") or {}),
-            "host": os.environ.get("HOSTNAME"),
-            "pid": os.getpid(),
         }
 
         # If we have a request in the extra then override actor and actor_ip
@@ -65,6 +63,8 @@ class GoogleLoggingJSONFormatter(VerboseJSONFormatter):
 class FormatterSetDefaults(logging.Formatter):
 
     def format(self, record):
+        record.host = os.environ.get("HOSTNAME")
+        record.pid = os.getpid()
         if not hasattr(record, "actor_ip"):
             record.actor_ip = None
         if not hasattr(record, "actor"):
