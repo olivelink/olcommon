@@ -1,14 +1,19 @@
 from json_log_formatter import VerboseJSONFormatter
 
 import logging.handlers
+import os
 
 
 class ActorLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
         extra = {
+            "actor": None,
+            "actor_ip": None,
             **self.extra,
             **(kwargs.get("extra") or {}),
+            "host": os.environ.get("HOSTNAME"),
+            "pid": os.getpid(),
         }
 
         # If we have a request in the extra then override actor and actor_ip
