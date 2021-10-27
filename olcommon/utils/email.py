@@ -17,6 +17,8 @@ VALID_USER_EMAIL_EXPRESSION = (
 )
 VALID_USER_EMAIL = re.compile(VALID_USER_EMAIL_EXPRESSION)
 
+INVALID_RCPT = re.compile(r"^(no-?reply|mailer-?daemon|root)@[^@]+$")
+
 
 def is_valid_email(email):
     """Test if an email is a valid (safe) email
@@ -25,14 +27,30 @@ def is_valid_email(email):
     out potential unsafe charactors.
 
     Args:
-        user_email (str): The value to be tested
+        email (str): The value to be tested
 
     Returns:
-        bool: True if the user_email was valid. Otherwise False
+        bool: True if the email was valid. Otherwise False
     """
     if len(email) > 254:
         return False
     return VALID_USER_EMAIL.match(email) is not None
+
+
+def is_valid_rcpt(email):
+    """Test if an email is a valid recipient.
+    Args:
+        email (str): The value to be tested
+
+    Returns:
+        bool: True if the eail was valid recipient. Otherwise False
+    """
+    if not is_valid_email(email):
+        return False
+    email = email.lower()
+    if INVALID_RCPT.match(email) is not None:
+        return False
+    return True
 
 
 def email_normalize(email):
