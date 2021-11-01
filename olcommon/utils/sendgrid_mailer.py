@@ -88,5 +88,5 @@ class SendgridMailer(SMTPMailer):
         except requests.exceptions.HTTPError:
             # Before printing error also print response text
             # This info has usefull debugging information
-            logger.error(resp.text)
+            logger.error(f'Payload: {payload}\nResponse: {resp.text}')
             raise
