@@ -54,6 +54,8 @@ def is_valid_rcpt(email):
 
 
 def email_normalize(email):
+    if not email:
+        return None
     addresses = getaddresses([email])
     if len(addresses) == 1:
         email = addresses[0][1]
