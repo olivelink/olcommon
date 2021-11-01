@@ -48,3 +48,4 @@ def configure_registry(registry: dict, settings: dict):
             sendgrid_api_key=settings["sendgrid_api_key"],
             sendgrid_template_generic=settings["sendgrid_template_generic"],
         )
+    registry["rq_write_group_queues"] = settings["rq_write_group_queues"].split()
