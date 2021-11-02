@@ -9,6 +9,8 @@ from jwt.exceptions import ExpiredSignatureError
 from jwt.exceptions import InvalidTokenError
 from uuid import UUID
 from os.path import dirname
+from pprint import pprint
+from pyramid.view import render_view_to_response
 
 import jwt
 import os
@@ -241,6 +243,8 @@ def generate_jwt(request, **claims):
 def inject_template_vars(renderer_globals):
     if renderer_globals.get("request", None) is not None:
         renderer_globals["templates"] = renderer_globals["request"].registry["templates"]
+    renderer_globals["pprint"] = pprint
+    renderer_globals["render_view_to_response"] = render_view_to_response
 
 
 # JSON Renderer
