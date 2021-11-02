@@ -63,3 +63,11 @@ class SiteBase(object):
 
     def principals_for_identity(self, identity):
         return []
+
+    @property
+    def application_url(self):
+        return self.registry["application_url"]
+
+    @property
+    def application_id(self):
+        return self.registry["application_id"]
