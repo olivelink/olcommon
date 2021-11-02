@@ -1,5 +1,5 @@
-from . import sendgrid_mailer
 from .utils import yesish
+from .utils.sendgrid_mailer import SendgridMailer
 from .logging import ActorLoggerAdapter
 
 import os
@@ -32,7 +32,7 @@ def configure_registry(registry: dict, settings: dict):
     registry["db_session_factory"] = sqlalchemy.orm.sessionmaker()
     registry["db_session_factory"].configure(bind=registry["db_engine"])
 
-    registry["redis"] = redis.StrictRedis.from_url(
+    registry["get_redis"] = lambda: redis.StrictRedis.from_url(
         settings["redis_url"], decode_responses=False
     )
 
@@ -46,9 +46,10 @@ def configure_registry(registry: dict, settings: dict):
     if registry["use_debug_mailer"] :
         registry["sendgrid_smtp_mailer"] = None
     else:
-        registry["sendgrid_smtp_mailer"] = sendgrid_mailer.SendgridMailer(
+        registry["sendgrid_smtp_mailer"] = SendgridMailer(
             hostname=settings["mail.host"],
             port=settings["mail.port"],
             sendgrid_api_key=settings["sendgrid_api_key"],
             sendgrid_template_generic=settings["sendgrid_template_generic"],
         )
+    registry["rq_write_group_queues"] = settings["rq_write_group_queues"].split()

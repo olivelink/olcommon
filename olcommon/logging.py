@@ -1,12 +1,15 @@
 from json_log_formatter import VerboseJSONFormatter
 
 import logging.handlers
+import os
 
 
 class ActorLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
         extra = {
+            "actor": None,
+            "actor_ip": None,
             **self.extra,
             **(kwargs.get("extra") or {}),
         }
@@ -60,6 +63,8 @@ class GoogleLoggingJSONFormatter(VerboseJSONFormatter):
 class FormatterSetDefaults(logging.Formatter):
 
     def format(self, record):
+        record.host = os.environ.get("HOSTNAME")
+        record.pid = os.getpid()
         if not hasattr(record, "actor_ip"):
             record.actor_ip = None
         if not hasattr(record, "actor"):

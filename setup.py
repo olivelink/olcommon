@@ -37,4 +37,6 @@ setup(name='olcommon',
         'psycopg2-binary',
 
         'JSON-log-formatter',
+
+        'dateparser',
       ])

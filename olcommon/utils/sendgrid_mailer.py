@@ -29,11 +29,20 @@ class SendgridMailer(SMTPMailer):
             self.sendgrid_send(smtpapi)
             return
 
+        if not isinstance(message, email.mime.multipart.MIMEMultipart):
+            # Non multipart messages to go via SMTP
+            return super().send(self, fromaddr, toaddrs, message)
+
+        if message.get_content_subtype() == "report":
+            # Send delivery report types (such as mail delivery failure) directy through SMTP
+            return super().send(self, fromaddr, toaddrs, message)
+
         html_part = None
-        if isinstance(message, email.mime.multipart.MIMEMultipart):
-            for part in message.walk():
-                if part.get('content-type').startswith('text/html'):
-                    html_part = part
+        for part in message.walk():
+            if part.get_content_maintype() != "text":
+                continue
+            if message.get_content_subtype() == "html":
+                html_part = part
 
         if html_part is None:
             return super().send(self, fromaddr, toaddrs, message)
@@ -79,5 +88,5 @@ class SendgridMailer(SMTPMailer):
         except requests.exceptions.HTTPError:
             # Before printing error also print response text
             # This info has usefull debugging information
-            logger.error(resp.text)
+            logger.error(f'Payload: {payload}\nResponse: {resp.text}')
             raise

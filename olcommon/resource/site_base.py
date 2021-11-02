@@ -38,7 +38,7 @@ class SiteBase(object):
             "registry": registry,
             "transaction": tm,
             "db_session": db_session,
-            "redis": registry["redis"],
+            "redis": registry["get_redis"](),
             "mailer": mailer,
             "get_logger": registry["get_logger"],
             **kwargs,
@@ -58,10 +58,7 @@ class SiteBase(object):
         }
         return cls(**kwargs)
 
-    def authenticated_userid_for_jwt_claims(self, claims):
-        return claims["sub"]
-
-    def identity_for_jwt_claims(self, claims):
+    def user_for_identity(self, identity):
         return None
 
     def principals_for_identity(self, identity):

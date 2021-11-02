@@ -145,13 +145,11 @@ class HandleClientError(HandleException):
         if super_message:
             return super_message
         
-        title = getattr(self.context, 'title', None)
         message = getattr(self.context, 'message', None)
+        if message:
+            return f"{message}"
 
-        if title and message:
-            return f"{message} ({title})"
-
-        return message or title or None
+        return getattr(self.context, 'title', None)
 
 
 @view_config(route_name="api", context="sqlalchemy.exc.IntegrityError", renderer="json")
