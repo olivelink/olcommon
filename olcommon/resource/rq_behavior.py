@@ -25,7 +25,7 @@ class RqBehavior:
             raise NotImplementedError(f"Not implemented for key of type {type(key)}")
 
         # Calculate a hash of key that is a float between 0.0 and 1.0
-        key_hash = md5(self.account_id.bytes).digest()
+        key_hash = md5(key).digest()
         key_hash = key_hash[0]
         key_hash = key_hash / 256
 
