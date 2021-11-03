@@ -14,7 +14,7 @@ class RqBehavior:
         return rq.Queue(name, connection=acquire().redis)
 
     @lru_cache(1000)
-    def get_write_queue(self, key):
+    def get_write_group_queue(self, key):
 
         # Cast our key to md5 hashable bytes
         if isinstance(key, UUID):
@@ -27,7 +27,7 @@ class RqBehavior:
         # Calculate a hash of key that is a float between 0.0 and 1.0
         key_hash = md5(self.account_id.bytes).digest()
         key_hash = key_hash[0]
-        key_hash = key_hash / 255
+        key_hash = key_hash / 256
 
         # Convert the key_hash to a group name
         write_groups = acquire().registry["rq_write_group_queues"]
