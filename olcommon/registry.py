@@ -35,6 +35,10 @@ def configure_registry(registry: dict, settings: dict):
     registry["get_redis"] = lambda: redis.StrictRedis.from_url(
         settings["redis_url"], decode_responses=False
     )
+
+    registry["application_url"] = settings["application_url"]
+    registry["application_id"] = settings["application_id"]
+
     registry["site_email"] = settings["site_email"]
     registry["site_email_from_name"] = settings["site_email_from_name"]
     registry["site_noreply_email"] = settings["site_noreply_email"]
