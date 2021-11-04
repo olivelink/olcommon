@@ -1,3 +1,5 @@
+from ctq import ResourceCache
+
 import logging
 import pyramid_mailer
 import zope.sqlalchemy
@@ -33,11 +35,22 @@ class SiteBase(object):
         if self.on_after_commit not in after_commit_hooks:
             tx.addAfterCommitHook(self.on_after_commit)
 
+        after_abort_hooks = (h[0] for h in tx.getAfterAbortHooks())
+        if self.on_after_abort_hook not in after_abort_hooks:
+            tx.addAfterAbortHook(self.on_after_abort_hook)
+
     def on_before_commit(self):
         return
 
     def on_after_commit(self, success):
         return
+
+    def on_after_abort_hook(self):
+        # Close down this resource tree from furuther use.
+        self.transaction = None
+        self.redis = None
+        if isinstance(self, ResourceCache):
+            self.resource_cache_clear()
 
     @classmethod
     def from_registry(cls, registry, *args, **kwargs):
