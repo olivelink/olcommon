@@ -11,7 +11,7 @@ class JobBehavior:
     _job_enqueue_pending = None
     _job_enqueue_in_pending = None
     _job_enqueue_call_pending = None
-    _job_enqueue_in_pending = None
+    _job_enqueue_emit_pending = None
 
     def enqueue(
         self,
