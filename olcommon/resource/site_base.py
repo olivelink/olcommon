@@ -2,6 +2,7 @@ import logging
 import pyramid_mailer
 import zope.sqlalchemy
 import transaction as zope_transaction
+import transaction.interfaces as zope_transaction_interfaces
 
 class SiteBase(object):
     """A primitive site"""
@@ -16,6 +17,27 @@ class SiteBase(object):
         self.db_session = db_session
         self.redis = redis
         self.get_logger = get_logger
+
+    def init_transaction(self):
+        try:
+            tx = self.transaction.get()
+        except zope_transaction_interfaces.NoTransaction:
+            self.transaction.begin()
+            tx = self.transaction.get()
+
+        before_commit_hooks = (h[0] for h in tx.getBeforeCommitHooks())
+        if self.on_before_commit not in before_commit_hooks:
+            tx.addBeforeCommitHook(self.on_before_commit)
+
+        after_commit_hooks = (h[0] for h in tx.getAfterCommitHooks())
+        if self.on_after_commit not in after_commit_hooks:
+            tx.addAfterCommitHook(self.on_after_commit)
+
+    def on_before_commit(self):
+        return
+
+    def on_after_commit(self, success):
+        return
 
     @classmethod
     def from_registry(cls, registry, *args, **kwargs):
@@ -34,7 +56,7 @@ class SiteBase(object):
                 transaction_manager=tm, smtp_mailer=registry["sendgrid_smtp_mailer"]
             )
 
-        return cls(**{
+        site = cls(**{
             "registry": registry,
             "transaction": tm,
             "db_session": db_session,
@@ -43,11 +65,13 @@ class SiteBase(object):
             "get_logger": registry["get_logger"],
             **kwargs,
         })
+        site.init_transaction()
+        return site
 
     @classmethod
     def from_request(cls, request, **kwargs):
         """Create a site object from a request object"""
-        kwargs = {
+        site = cls(**{
             'registry': request.registry,
             'db_session': request.db_session,
             'redis': request.redis,
@@ -55,8 +79,9 @@ class SiteBase(object):
             'transaction': request.tm,
             "get_logger": request.get_logger,
             **kwargs,
-        }
-        return cls(**kwargs)
+        })
+        site.init_transaction()
+        return site
 
     def user_for_identity(self, identity):
         return None

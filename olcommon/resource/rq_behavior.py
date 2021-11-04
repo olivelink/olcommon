@@ -15,7 +15,10 @@ class RqBehavior:
 
     @lru_cache(1000)
     def get_write_group_queue(self, key):
+        group_name = self.get_write_group_name(key)
+        return self.get_queue(group_name)
 
+    def get_write_group_name(self, key):
         # Cast our key to md5 hashable bytes
         if isinstance(key, UUID):
             key = key.bytes
@@ -32,6 +35,4 @@ class RqBehavior:
         # Convert the key_hash to a group name
         write_groups = acquire().registry["rq_write_group_queues"]
         index = int(math.floor(key_hash * len(write_groups)))
-        group_name = write_groups[index]
-
-        return self.get_queue(group_name)
+        return write_groups[index]
