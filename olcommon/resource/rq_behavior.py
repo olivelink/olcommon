@@ -14,7 +14,7 @@ class RqBehavior:
         return rq.Queue(name, connection=acquire().redis)
 
     @lru_cache(1000)
-    def get_write_group_queue(self, key):
+    def get_write_queue(self, key):
         group_name = self.get_write_group_name(key)
         return self.get_queue(group_name)
 
