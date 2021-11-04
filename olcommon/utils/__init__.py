@@ -107,7 +107,6 @@ def map_context_reify(*names):
 @contextmanager
 def root_context(registry):
     root = registry["root_class"].from_registry(registry)
-    root.transaction.begin()
     try:
         yield root
         root.transaction.commit()
