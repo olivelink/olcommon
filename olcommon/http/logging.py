@@ -93,7 +93,7 @@ def log(request, response, exception_raised, latency):
         # Select level
         response_status = int(response_status)
         if route_name == "check":  # Send check requests to debug only
-            emit =logger_access.debug
+            emit = logger_access.debug
         elif 500 <= response_status < 600:
             emit = logger_access.error
         elif 400 <= response_status < 500:

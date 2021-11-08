@@ -7,9 +7,9 @@ def resource_call(site, path, method_name, *args, **kwargs):
     func(*args, **kwargs)
 
 
-def resource_emit(site, path, event_name, *args, **kwargs):
+def resource_emit(site, path, event_name, data=None, /)):
     context = _traverse(site, path)
-    emit(context, event_name, *args, **kwargs)
+    emit(event_name, data, target=context)
 
 
 def _traverse(root, path):
