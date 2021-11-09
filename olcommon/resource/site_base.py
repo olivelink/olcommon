@@ -1,4 +1,5 @@
 from ctq import ResourceCache
+from pyramid.authorization import Everyone
 
 import logging
 import pyramid_mailer
@@ -96,11 +97,11 @@ class SiteBase(object):
         site.init_transaction()
         return site
 
-    def user_for_identity(self, identity):
+    def get_user_for_identity(self, identity):
         return None
 
-    def principals_for_identity(self, identity):
-        return []
+    def get_principals(self, identity, user):
+        return [Everyone]
 
     @property
     def application_url(self):
