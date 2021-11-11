@@ -79,29 +79,29 @@ class JobBehavior:
             # Process enqueue
             if self._job_enqueue_pending:
                 for item in self._job_enqueue_pending:
-                    logger.debug(f"Enquing: {item}")
                     (queue, func, args, kwargs) = item
-                    queue.enqueue(func, *args, **kwargs)
+                    job = queue.enqueue(func, *args, **kwargs)
+                    logger.debug(f"Enqueued: {job.func_name} {args} {kwargs}: {job.get_id()} ({queue.name})")
 
             # Process enqueue_call
             if self._job_enqueue_call_pending:
                 for item in self._job_enqueue_call_pending:
-                    logger.debug(f"Enquing call: {item}")
                     (queue, func, args, kwargs, enqueue_call_args, enqueue_call_kwargs) = item
-                    queue.enqueue_call(func, args, kwargs, *enqueue_call_args, **enqueue_call_kwargs)
+                    job = queue.enqueue_call(func, args, kwargs, *enqueue_call_args, **enqueue_call_kwargs)
+                    logger.debug(f"Enqueued: {job.func_name} {args} {kwargs}: {job.get_id()} ({queue.name})")
 
             # Process enqueu_in
             if self._job_enqueue_in_pending:
                 for item in self._job_enqueue_in_pending:
-                    logger.debug(f"Enquing in: {item}")
                     (queue, time_delta, func, args, kwargs) = item
-                    queue.enqueue_in(time_delta, func, *args, **kwargs)
+                    job = queue.enqueue_in(time_delta, func, *args, **kwargs)
+                    logger.debug(f"Enqueued in {time_delta.total_seconds():.3f}s: {job.func_name} {args} {kwargs}: {job.get_id()} ({queue.name})")
             
             if self._job_enqueue_emit_pending:
                 for item in self._job_enqueue_emit_pending:
-                    logger.debug(f"Enquing emit: {item}")
                     (queue, target_path, event_name, data) = item
-                    queue.enqueue(resource_emit, target_path, event_name, data)
+                    job = queue.enqueue(resource_emit, target_path, event_name, data)
+                    logger.debug(f'Enqueued emit "{event_name}" on {target_path} with {data}: {job.get_id()} ({queue.name})')
 
         self._job_enqueue_pending = None
         self._job_enqueue_call_pending = None
