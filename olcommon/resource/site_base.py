@@ -40,6 +40,8 @@ class SiteBase(object):
         if self.on_after_abort_hook not in after_abort_hooks:
             tx.addAfterAbortHook(self.on_after_abort_hook)
 
+        self.transaction.begin = lambda: tx  # Neuter the begin method.
+
     def on_before_commit(self):
         return
 

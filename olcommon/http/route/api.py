@@ -161,6 +161,20 @@ class HandleSQLAlchemyIntegrityError(HandleException):
     code = 400
 
 
+@view_config(route_name="api", context="jsonschema.exceptions.ValidationError", renderer="json")
+class HandleSQLAlchemyValidationError(HandleException):
+    """Handle a client error and return a json object in the jsend message spec format"""
+
+    status = "fail"
+    default_message = "Invalid data."
+    code = 400
+
+    @reify
+    def message(self):
+        """Allow backing down to the execption message passing through"""
+        return str(self.context)
+
+
 def includeme(config):
     config.add_route("api_options", "/api/*path", request_method="OPTIONS")
     config.add_subscriber(new_request_handler, pyramid.events.NewRequest)
