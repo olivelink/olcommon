@@ -12,11 +12,13 @@ from os.path import dirname
 from pprint import pprint
 from pyramid.view import render_view_to_response
 
+
 import jwt
 import os
 import os.path
 import pyramid.renderers
 import pyramid_mailer
+import pyramid_session_redis
 import zope.sqlalchemy
 import logging
 
@@ -31,6 +33,7 @@ def includeme(config):
     configure_plugins(config)
     configure_rendering(config)
     configure_request(config)
+    configure_session(config)
     configure_routes(config)
 
 
@@ -116,6 +119,25 @@ def configure_request(config):
         ],
     )
 
+
+def configure_session(config):
+    registry = config.registry
+    settings = config.get_settings()
+    secret = settings["session_secret"]
+    secret = secret[:32]
+    session_factory = pyramid_session_redis.RedisSessionFactory(
+        secret,
+        timeout=1200,  # 20 minutes
+        cookie_name=registry["application_id"] + "-sid",
+        cookie_domain=settings.get("cookie_domain") or None,
+        cookie_max_age=1200,
+        cookie_secure=not registry["is_debug"],
+        cookie_httponly=True,
+        client_callable=lambda request, **kwargs: request.redis,
+    )
+    config.set_session_factory(session_factory)
+
+
 def configure_routes(config):
     config.include(".route.robots")
     config.include(".route.check")
@@ -149,6 +171,7 @@ def get_user(request):
 
 def get_principals(request):
     return request.site.get_principals(request.identity, request.user)
+
 
 
 def db_session_from_request(request):
