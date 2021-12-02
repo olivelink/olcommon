@@ -29,6 +29,8 @@ def add_headers(request, response):
 
     # Get
     origin = request.headers.get("origin", "*")
+    if origin.lower() in ('"null"', "null"):
+        origin = "*"
     headers["Access-Control-Allow-Origin"] = origin
 
     # Set vary header
