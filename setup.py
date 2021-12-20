@@ -26,6 +26,7 @@ setup(name='olcommon',
         'zope.sqlalchemy',
 
         'redis',
+        'pyramid-session-redis',
 
         'jsonschema',
         'pyjwt',
