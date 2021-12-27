@@ -1,5 +1,5 @@
 from json_log_formatter import VerboseJSONFormatter
-
+from pyramid.request import Request
 import logging.handlers
 import os
 
@@ -31,8 +31,54 @@ class ActorLoggerAdapter(logging.LoggerAdapter):
     def set_actor(self, actor):
         self.extra["actor"] = actor
 
-
 class GoogleLoggingJSONFormatter(VerboseJSONFormatter):
+
+    def mutate_json_record(self, json_record, stack=None):
+
+        # Make sure we keep track of recursive objects
+        if stack is None:
+            stack = set([id(json_record)])
+        else:
+            stack = set([id(json_record)]) | stack
+
+        if len(stack) > 10:
+            return 
+
+        rec = {}
+        for k, v in json_record.items():
+
+            # Check for a good key
+            if not isinstance(k, str):
+                continue
+            if k.startswith("_"):
+                continue
+            k = str(k)
+
+            # Parse the value
+            if (
+                isinstance(v, str)
+                or isinstance(v, int)
+                or isinstance(v, float)
+                or isinstance(v, bool)
+                or (v is None)
+            ):
+                pass
+            if isinstance(v, Request):
+                v = str(v)  # no decending into the request rebbit hole
+            elif len(stack) > 5:
+                continue  # too deep to recurse any further
+            elif id(v) in stack:
+                continue  # ignore value as this would be recurssion
+            elif isinstance(v, dict):
+                new_valvue = self.mutate_json_record(v, stack)
+            elif hasattr(v, "__dict__"):
+                v = self.mutate_json_record(v.__dict__, stack)
+            else:
+                v = str(v)
+            
+            rec[k] = v
+    
+        return rec
 
     def json_record(self, message, extra, record):
         extra['logging.googleapis.com/severity'] = record.levelname
@@ -59,6 +105,12 @@ class GoogleLoggingJSONFormatter(VerboseJSONFormatter):
         if latency := getattr(record, "latency", None):
             extra["latency"] = latency
         return super().json_record(message, extra, record)
+
+def _json_serializable(obj):
+    try:
+        return {k: v for k, v in obj.__dict__.items() if isinstance(k, str) and not k.startswith("_")}
+    except AttributeError:
+        return str(obj)
 
 class FormatterSetDefaults(logging.Formatter):
 
