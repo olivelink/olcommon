@@ -9,7 +9,7 @@ from jwt.exceptions import ExpiredSignatureError
 from jwt.exceptions import InvalidTokenError
 from uuid import UUID
 from os.path import dirname
-from pformat import pformat
+from pprint import pformat
 from pyramid.view import render_view_to_response
 
 
