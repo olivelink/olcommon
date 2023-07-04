@@ -94,6 +94,7 @@ class JobBehavior:
             if self._job_enqueue_in_pending:
                 for item in self._job_enqueue_in_pending:
                     (queue, time_delta, func, args, kwargs) = item
+                    assert not isinstance(queue, str), f"queue must be a queue, not a string: {queue}"
                     job = queue.enqueue_in(time_delta, func, *args, **kwargs)
                     logger.debug(f"Enqueued in {time_delta.total_seconds():.3f}s: {job.func_name} {args} {kwargs}: {job.get_id()} ({queue.name})")
             
